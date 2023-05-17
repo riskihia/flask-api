@@ -56,21 +56,27 @@ class LinkTagsToItem(MethodView):
 
         return tag
 
+    @blp.response(200, TagAndItemSchema)
+    def delete(self, item_id, tag_id):
+        item = ItemModel.query.get_or_404(item_id)
+        tag = TagModel.query.get_or_404(tag_id)
 
-@blp.response(200, TagAndItemSchema)
-def delete(self, item_id, tag_id):
-    item = ItemModel.query.get_or_404(item_id)
-    tag = TagModel.query.get_or_404(tag_id)
+        item.tags.remove(tag)
 
-    item.tags.remove(tag)
+        try:
+            db.session.add(item)
+            db.session.commit()
+        except SQLAlchemyError:
+            abort(500, message="An error occurred while inserting the tag.")
 
-    try:
-        db.session.add(item)
-        db.session.commit()
-    except SQLAlchemyError:
-        abort(500, message="An error occurred while inserting the tag.")
+        return {"message": "Item removed from tag", "item": item, "tag": tag}
 
-    return {"message": "Item removed from tag", "item": item, "tag": tag}
+
+@blp.route("/tag")
+class TagAll(MethodView):
+    @blp.response(200, TagSchema(many=True))
+    def get(self):
+        return TagModel.query.all()
 
 
 @blp.route("/tag/<string:tag_id>")
