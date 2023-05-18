@@ -1,15 +1,13 @@
 import os
-from flask import Flask
+from dotenv import load_dotenv
+from flask import Flask, jsonify
 from flask_smorest import Api
 import pymysql
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
-import secrets
-from flask import jsonify
 
 from db import db
 from blocklist import BLOCKLIST
-
 import models
 
 from resources.item import blp as ItemBlueprint
@@ -20,6 +18,7 @@ from resources.user import blp as UserBlueprint
 
 def create_app():
     app = Flask(__name__)
+    load_dotenv()
     app.config["PROPAGATE_EXCEPTIONS"] = True
     app.config["API_TITLE"] = "Stores REST API"
     app.config["API_VERSION"] = "v1"
@@ -30,7 +29,7 @@ def create_app():
         "OPENAPI_SWAGGER_UI_URL"
     ] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = str(os.environ.get("DATABASE_URL"))
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
