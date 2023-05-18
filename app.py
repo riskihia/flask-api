@@ -30,9 +30,7 @@ def create_app():
         "OPENAPI_SWAGGER_UI_URL"
     ] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
 
-    app.config[
-        "SQLALCHEMY_DATABASE_URI"
-    ] = "mysql+pymysql://root:@localhost:3306/flask_docker"
+    app.config["SQLALCHEMY_DATABASE_URI"] = str(os.environ.get("DATABASE_URL"))
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
